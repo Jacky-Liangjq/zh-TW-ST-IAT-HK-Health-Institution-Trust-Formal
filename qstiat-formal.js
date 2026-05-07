@@ -36,15 +36,15 @@
       phase: 'practice',
       condition: 'POS',
       includeInD: false,
-      subBlockSize: 24,
+      subBlockSize: 12,
       counts: {
-        institution: 6,
-        trust_ability: 2,
-        trust_benevolence: 2,
-        trust_integrity: 2,
-        distrust_ability: 4,
-        distrust_benevolence: 4,
-        distrust_integrity: 4
+        institution: 3,
+        trust_ability: 1,
+        trust_benevolence: 1,
+        trust_integrity: 1,
+        distrust_ability: 2,
+        distrust_benevolence: 2,
+        distrust_integrity: 2
       }
     },
     {
@@ -53,15 +53,15 @@
       phase: 'test',
       condition: 'POS',
       includeInD: true,
-      subBlockSize: 24,
+      subBlockSize: 21,
       counts: {
-        institution: 18,
-        trust_ability: 6,
-        trust_benevolence: 6,
-        trust_integrity: 6,
-        distrust_ability: 12,
-        distrust_benevolence: 12,
-        distrust_integrity: 12
+        institution: 12,
+        trust_ability: 4,
+        trust_benevolence: 4,
+        trust_integrity: 4,
+        distrust_ability: 6,
+        distrust_benevolence: 6,
+        distrust_integrity: 6
       }
     },
     {
@@ -70,15 +70,15 @@
       phase: 'practice',
       condition: 'NEG',
       includeInD: false,
-      subBlockSize: 24,
+      subBlockSize: 12,
       counts: {
-        institution: 6,
-        trust_ability: 4,
-        trust_benevolence: 4,
-        trust_integrity: 4,
-        distrust_ability: 2,
-        distrust_benevolence: 2,
-        distrust_integrity: 2
+        institution: 3,
+        trust_ability: 2,
+        trust_benevolence: 2,
+        trust_integrity: 2,
+        distrust_ability: 1,
+        distrust_benevolence: 1,
+        distrust_integrity: 1
       }
     },
     {
@@ -87,15 +87,15 @@
       phase: 'test',
       condition: 'NEG',
       includeInD: true,
-      subBlockSize: 24,
+      subBlockSize: 21,
       counts: {
-        institution: 18,
-        trust_ability: 12,
-        trust_benevolence: 12,
-        trust_integrity: 12,
-        distrust_ability: 6,
-        distrust_benevolence: 6,
-        distrust_integrity: 6
+        institution: 12,
+        trust_ability: 6,
+        trust_benevolence: 6,
+        trust_integrity: 6,
+        distrust_ability: 4,
+        distrust_benevolence: 4,
+        distrust_integrity: 4
       }
     }
   ];
@@ -121,7 +121,7 @@
     return arr;
   }
 
-  function hasRunLongerThanFour(slots) {
+  function hasRunOfFourOrMore(slots) {
     var runSide = null;
     var runLength = 0;
     for (var i = 0; i < slots.length; i++) {
@@ -131,7 +131,7 @@
         runSide = slots[i].side;
         runLength = 1;
       }
-      if (runLength > 4) return true;
+      if (runLength >= 4) return true;
     }
     return false;
   }
@@ -197,18 +197,18 @@
     var candidate;
     for (var attempt = 0; attempt < 5000; attempt++) {
       candidate = shuffleInPlace(slots.slice(), random);
-      if (!hasRunLongerThanFour(candidate)) return candidate;
+      if (!hasRunOfFourOrMore(candidate)) return candidate;
     }
-    throw new Error('Could not randomize trials while keeping same-side runs to four or fewer trials.');
+    throw new Error('Could not randomize trials while preventing 4-trial same-side runs.');
   }
 
-  function assignWords(slots, stimuli, random) {
+  function assignWords(slots, stimuli, random, subBlockSize) {
     var queues = buildWordQueues(stimuli, random);
     return slots.map(function (slot, index) {
       var trial = shallowMerge(slot, {
         word: queues.next(slot.category),
         trialInRound: index + 1,
-        subBlock: Math.floor(index / 24) + 1
+        subBlock: Math.floor(index / subBlockSize) + 1
       });
       return trial;
     });
@@ -229,7 +229,7 @@
 
     return ROUND_SPECS.map(function (spec) {
       var slots = randomizedSlotsWithoutRuns(buildSlots(spec), random);
-      var trials = assignWords(slots, stimuli, random);
+      var trials = assignWords(slots, stimuli, random, spec.subBlockSize);
       var subBlocks = splitSubBlocks(trials, spec.subBlockSize);
       return {
         block: spec.block,
@@ -273,7 +273,7 @@
       ROUND_SPECS: ROUND_SPECS,
       STIMULUS_TYPE: STIMULUS_TYPE,
       createFormalTrialPlan: createFormalTrialPlan,
-      hasRunLongerThanFour: hasRunLongerThanFour,
+      hasRunOfFourOrMore: hasRunOfFourOrMore,
       sideForCategory: sideForCategory
     };
   }
@@ -588,6 +588,6 @@
   stiatExtension.createFormalTrialPlan = createFormalTrialPlan;
   stiatExtension.FORMAL_STIMULI = FORMAL_STIMULI;
   stiatExtension.ROUND_SPECS = ROUND_SPECS;
-  stiatExtension.hasRunLongerThanFour = hasRunLongerThanFour;
+  stiatExtension.hasRunOfFourOrMore = hasRunOfFourOrMore;
   return stiatExtension;
 }));

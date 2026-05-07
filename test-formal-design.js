@@ -3,40 +3,40 @@ const formal = require('./qstiat-formal.js');
 
 const expectedCounts = {
   block1_practice_pos: {
-    institution: 6,
-    trust_ability: 2,
-    trust_benevolence: 2,
-    trust_integrity: 2,
-    distrust_ability: 4,
-    distrust_benevolence: 4,
-    distrust_integrity: 4
-  },
-  block2_test_pos: {
-    institution: 18,
-    trust_ability: 6,
-    trust_benevolence: 6,
-    trust_integrity: 6,
-    distrust_ability: 12,
-    distrust_benevolence: 12,
-    distrust_integrity: 12
-  },
-  block3_practice_neg: {
-    institution: 6,
-    trust_ability: 4,
-    trust_benevolence: 4,
-    trust_integrity: 4,
+    institution: 3,
+    trust_ability: 1,
+    trust_benevolence: 1,
+    trust_integrity: 1,
     distrust_ability: 2,
     distrust_benevolence: 2,
     distrust_integrity: 2
   },
-  block4_test_neg: {
-    institution: 18,
-    trust_ability: 12,
-    trust_benevolence: 12,
-    trust_integrity: 12,
+  block2_test_pos: {
+    institution: 12,
+    trust_ability: 4,
+    trust_benevolence: 4,
+    trust_integrity: 4,
     distrust_ability: 6,
     distrust_benevolence: 6,
     distrust_integrity: 6
+  },
+  block3_practice_neg: {
+    institution: 3,
+    trust_ability: 2,
+    trust_benevolence: 2,
+    trust_integrity: 2,
+    distrust_ability: 1,
+    distrust_benevolence: 1,
+    distrust_integrity: 1
+  },
+  block4_test_neg: {
+    institution: 12,
+    trust_ability: 6,
+    trust_benevolence: 6,
+    trust_integrity: 6,
+    distrust_ability: 4,
+    distrust_benevolence: 4,
+    distrust_integrity: 4
   }
 };
 
@@ -56,7 +56,7 @@ function countBy(items, key) {
   }, {});
 }
 
-function assertNoRunLongerThanFour(trials, label) {
+function assertNoRunOfFourOrMore(trials, label) {
   let side = null;
   let run = 0;
   for (const trial of trials) {
@@ -65,7 +65,7 @@ function assertNoRunLongerThanFour(trials, label) {
       side = trial.side;
       run = 1;
     }
-    assert(run <= 4, `${label} has a same-side run longer than four`);
+    assert(run < 4, `${label} has a same-side run of four or more`);
   }
 }
 
@@ -87,14 +87,15 @@ function validatePlan(plan) {
   for (const round of plan) {
     const expected = expectedCounts[round.label];
     const totalExpected = Object.values(expected).reduce((sum, value) => sum + value, 0);
+    const expectedSubBlockSize = round.phase === 'test' ? 21 : 12;
 
     assert.strictEqual(round.trials.length, totalExpected, `${round.label} total trials`);
     assert.deepStrictEqual(countBy(round.trials, 'category'), expected, `${round.label} category counts`);
-    assertNoRunLongerThanFour(round.trials, round.label);
+    assertNoRunOfFourOrMore(round.trials, round.label);
 
     for (const subBlock of round.subBlocks) {
-      assert.strictEqual(subBlock.length, 24, `${round.label} sub-block size`);
-      assertNoRunLongerThanFour(subBlock, `${round.label} sub-block`);
+      assert.strictEqual(subBlock.length, expectedSubBlockSize, `${round.label} sub-block size`);
+      assertNoRunOfFourOrMore(subBlock, `${round.label} sub-block`);
     }
 
     for (const category of Object.keys(expected)) {
