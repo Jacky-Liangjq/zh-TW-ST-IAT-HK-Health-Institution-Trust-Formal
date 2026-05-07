@@ -37,7 +37,7 @@ Qualtrics.SurveyEngine.addOnload(function () {
 
       minnoJS(
         canvas,
-        'https://cdn.jsdelivr.net/gh/Jacky-Liangjq/zh-TW-ST-IAT-HK-Health-Institution-Trust-Formal@main/HKHealthTrustSTIAT.js'
+        'https://cdn.jsdelivr.net/gh/Jacky-Liangjq/zh-TW-ST-IAT-HK-Health-Institution-Trust-Formal@v1.0.0/HKHealthTrustSTIAT.js'
       );
 
       minnoJS.logger = function (value) {
