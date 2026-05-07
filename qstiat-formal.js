@@ -534,10 +534,10 @@
     for (var iRound = 0; iRound < trialPlan.length; iRound++) {
       trialSequence.push(instructionTrial(trialPlan[iRound]));
       for (var iSub = 0; iSub < trialPlan[iRound].subBlocks.length; iSub++) {
-        trialSequence.push({
-          mixer: 'sequential',
-          data: trialPlan[iRound].subBlocks[iSub].map(trialToMinnoTrial)
-        });
+        var subBlockTrials = trialPlan[iRound].subBlocks[iSub].map(trialToMinnoTrial);
+        for (var iTrial = 0; iTrial < subBlockTrials.length; iTrial++) {
+          trialSequence.push(subBlockTrials[iTrial]);
+        }
       }
     }
 
