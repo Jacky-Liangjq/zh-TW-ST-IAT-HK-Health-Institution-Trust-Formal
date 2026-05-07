@@ -28,7 +28,7 @@ This task is implemented with MinnoJS and follows the Qualtrics ST-IAT approach 
 
 The Traditional Chinese localization, Hong Kong health institution stimulus set, formal trial design, logging labels, and the mobile touch-response version were developed specifically for this project.
 
-Suggested citations:
+References:
 
 - Zlotnick, E., Dzikiewicz, A. J., & Bar-Anan, Y. (2015). Minno.js (Version 0.3) [Computer software].
 - Bengayev, E. (2020, July 10). Running Project Implicit's ST-IAT from Qualtrics [Blog post]. Retrieved from https://minnojs.github.io/minnojs-blog/qualtrics-stiat/
