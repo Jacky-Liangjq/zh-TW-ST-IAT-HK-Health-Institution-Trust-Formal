@@ -568,6 +568,12 @@
       postSettings: {score: 'score', msg: 'feedback', url: '/implicit/scorer'}
     });
 
+    scorer.addSettings('message', {
+      MessageDef: [
+        {cut: '5', message: ''}
+      ]
+    });
+
     API.addSettings('hooks', {
       endTask: function () {
         var DScoreObj = scorer.computeD();
