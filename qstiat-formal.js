@@ -509,8 +509,12 @@
         },
         layout: layoutFor(trial.condition),
         stimuli: [
-          {inherit: 'Default', data: {handle: 'targetStim', alias: trial.category}, media: {word: trial.word}},
-          {inherit: 'error'}
+          {
+            data: {handle: 'targetStim', alias: trial.category},
+            css: {color: '#000000', 'font-size': '3em', background: '#ffffff', padding: '0.4em 0.8em', 'border-radius': '8px', display: 'inline-block'},
+            media: {word: trial.word}
+          },
+          {inherit: {set: 'error'}}
         ]
       };
     }
