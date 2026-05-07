@@ -69,6 +69,12 @@ function assertNoRunOfFourOrMore(trials, label) {
   }
 }
 
+function assertNoAdjacentDuplicateWords(trials, label) {
+  for (let i = 1; i < trials.length; i++) {
+    assert.notStrictEqual(trials[i].word, trials[i - 1].word, `${label} has adjacent duplicate word: ${trials[i].word}`);
+  }
+}
+
 function assertCycleBeforeRepeat(trials, category) {
   const words = formal.FORMAL_STIMULI[category];
   const seen = new Set();
@@ -92,10 +98,12 @@ function validatePlan(plan) {
     assert.strictEqual(round.trials.length, totalExpected, `${round.label} total trials`);
     assert.deepStrictEqual(countBy(round.trials, 'category'), expected, `${round.label} category counts`);
     assertNoRunOfFourOrMore(round.trials, round.label);
+    assertNoAdjacentDuplicateWords(round.trials, round.label);
 
     for (const subBlock of round.subBlocks) {
       assert.strictEqual(subBlock.length, expectedSubBlockSize, `${round.label} sub-block size`);
       assertNoRunOfFourOrMore(subBlock, `${round.label} sub-block`);
+      assertNoAdjacentDuplicateWords(subBlock, `${round.label} sub-block`);
     }
 
     for (const category of Object.keys(expected)) {

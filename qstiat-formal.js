@@ -214,6 +214,13 @@
     });
   }
 
+  function hasAdjacentDuplicateWords(trials) {
+    for (var i = 1; i < trials.length; i++) {
+      if (trials[i].word === trials[i - 1].word) return true;
+    }
+    return false;
+  }
+
   function splitSubBlocks(trials, subBlockSize) {
     var blocks = [];
     for (var i = 0; i < trials.length; i += subBlockSize) {
@@ -228,8 +235,16 @@
     var stimuli = options.stimuli || FORMAL_STIMULI;
 
     return ROUND_SPECS.map(function (spec) {
-      var slots = randomizedSlotsWithoutRuns(buildSlots(spec), random);
-      var trials = assignWords(slots, stimuli, random, spec.subBlockSize);
+      var slots;
+      var trials;
+      for (var attempt = 0; attempt < 5000; attempt++) {
+        slots = randomizedSlotsWithoutRuns(buildSlots(spec), random);
+        trials = assignWords(slots, stimuli, random, spec.subBlockSize);
+        if (!hasAdjacentDuplicateWords(trials)) break;
+      }
+      if (hasAdjacentDuplicateWords(trials)) {
+        throw new Error('Could not randomize trials while preventing adjacent duplicate words.');
+      }
       var subBlocks = splitSubBlocks(trials, spec.subBlockSize);
       return {
         block: spec.block,
@@ -274,6 +289,7 @@
       STIMULUS_TYPE: STIMULUS_TYPE,
       createFormalTrialPlan: createFormalTrialPlan,
       hasRunOfFourOrMore: hasRunOfFourOrMore,
+      hasAdjacentDuplicateWords: hasAdjacentDuplicateWords,
       sideForCategory: sideForCategory
     };
   }
@@ -589,5 +605,6 @@
   stiatExtension.FORMAL_STIMULI = FORMAL_STIMULI;
   stiatExtension.ROUND_SPECS = ROUND_SPECS;
   stiatExtension.hasRunOfFourOrMore = hasRunOfFourOrMore;
+  stiatExtension.hasAdjacentDuplicateWords = hasAdjacentDuplicateWords;
   return stiatExtension;
 }));
