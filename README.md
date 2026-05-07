@@ -26,6 +26,8 @@ Displayed task text remains Chinese.
 
 This task is implemented with MinnoJS and follows the Qualtrics ST-IAT approach documented by MinnoJS / Project Implicit.
 
+The Traditional Chinese localization, Hong Kong health institution stimulus set, formal trial design, logging labels, and the mobile touch-response version were developed specifically for this project.
+
 Suggested citations:
 
 - Zlotnick, E., Dzikiewicz, A. J., & Bar-Anan, Y. (2015). Minno.js (Version 0.3) [Computer software].
