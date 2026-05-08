@@ -32,6 +32,17 @@ Participants are randomly assigned to one of two block orders with equal probabi
 
 The on-screen instruction pages always display the participant-facing sequence as parts 1 to 4. The log output records the assigned order in the `bOrd` column and includes a `block_order` metadata row.
 
+## Qualtrics Screenout Fields
+
+The Qualtrics wrappers write these Embedded Data fields when the task ends:
+
+- `stiat_d_score`: D-score when valid
+- `stiat_d_status`: `valid`, `invalid`, or `not_finished`
+- `stiat_invalid`: `0` for valid D-score, `1` for invalid or unfinished task
+- `stiat_block_order`: `positive_first` or `negative_first`
+
+To screen out invalid responses, add `stiat_invalid` as an Embedded Data field in Survey Flow before the ST-IAT question, then branch after the ST-IAT question when `stiat_invalid` equals `1`.
+
 ## Acknowledgement
 
 This task is implemented with MinnoJS and follows the Qualtrics ST-IAT approach documented by MinnoJS / Project Implicit.

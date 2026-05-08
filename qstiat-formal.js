@@ -379,9 +379,9 @@
         return ctx.logs;
       },
       serialize: function (name, logs) {
-        var headers = ['block', 'trial', 'round', 'cond', 'type', 'cat', 'stim', 'resp', 'err', 'rt', 'd', 'bOrd'];
+        var headers = ['block', 'trial', 'round', 'cond', 'type', 'cat', 'stim', 'resp', 'err', 'rt', 'd', 'bOrd', 'dStatus', 'dInvalid'];
         var rows = [];
-        rows.push([0, 0, 'block_order', block2Condition, '', '', '', '', '', '', '', block2Condition]);
+        rows.push([0, 0, 'block_order', block2Condition, '', '', '', '', '', '', '', block2Condition, '', '']);
 
         for (var i = 0; i < logs.length; i++) {
           var log = logs[i];
@@ -399,11 +399,13 @@
             log.data.score,
             log.latency,
             '',
+            '',
+            '',
             ''
           ]);
         }
 
-        rows.push([9, 999, 'end', 'end', '', '', '', '', '', '', piCurrent.d || '', block2Condition]);
+        rows.push([9, 999, 'end', 'end', '', '', '', '', '', '', piCurrent.d || '', block2Condition, piCurrent.dStatus || 'invalid', piCurrent.dInvalid || '1']);
         rows.unshift(headers);
         return toCsv(rows);
 
@@ -608,8 +610,17 @@
 
     API.addSettings('hooks', {
       endTask: function () {
-        var DScoreObj = scorer.computeD();
-        piCurrent.d = DScoreObj.DScore;
+        var DScoreObj = null;
+        var dScore = '';
+        try {
+          DScoreObj = scorer.computeD();
+          dScore = DScoreObj && DScoreObj.DScore;
+        } catch (e) {
+          if (window.console && console.error) console.error('D-score computation failed.', e);
+        }
+        piCurrent.d = isFinite(Number(dScore)) ? dScore : '';
+        piCurrent.dStatus = piCurrent.d === '' ? 'invalid' : 'valid';
+        piCurrent.dInvalid = piCurrent.d === '' ? '1' : '0';
         window.minnoJS.onEnd();
       }
     });

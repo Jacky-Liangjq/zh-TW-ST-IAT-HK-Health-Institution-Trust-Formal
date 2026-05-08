@@ -21,6 +21,40 @@ Qualtrics.SurveyEngine.addOnload(function () {
     if (err) console.error(err);
   }
 
+  function setEmbeddedData(name, value) {
+    if (q && q.setEmbeddedData) {
+      q.setEmbeddedData(name, value);
+    } else if (window.Qualtrics && Qualtrics.SurveyEngine && Qualtrics.SurveyEngine.setEmbeddedData) {
+      Qualtrics.SurveyEngine.setEmbeddedData(name, value);
+    }
+  }
+
+  function storeScoreFields(csv) {
+    var lines = String(csv || '').trim().split(/\r?\n/);
+    var headers = lines[0] ? lines[0].split(',') : [];
+    var endRow = null;
+    for (var i = lines.length - 1; i >= 1; i--) {
+      if (lines[i].indexOf('9,999,end,end,') === 0) {
+        endRow = lines[i].split(',');
+        break;
+      }
+    }
+    if (!endRow) return;
+
+    function valueFor(column) {
+      var index = headers.indexOf(column);
+      return index >= 0 ? endRow[index] || '' : '';
+    }
+
+    setEmbeddedData('stiat_d_score', valueFor('d'));
+    setEmbeddedData('stiat_block_order', valueFor('bOrd'));
+    setEmbeddedData('stiat_d_status', valueFor('dStatus') || 'invalid');
+    setEmbeddedData('stiat_invalid', valueFor('dInvalid') || '1');
+  }
+
+  setEmbeddedData('stiat_invalid', '1');
+  setEmbeddedData('stiat_d_status', 'not_finished');
+
   var scriptTag = document.createElement('script');
   scriptTag.src = 'https://cdn.jsdelivr.net/gh/minnojs/minno-quest@0.3/dist/pi-minno.js';
 
@@ -37,12 +71,13 @@ Qualtrics.SurveyEngine.addOnload(function () {
 
       minnoJS(
         canvas,
-        'https://cdn.jsdelivr.net/gh/Jacky-Liangjq/zh-TW-ST-IAT-HK-Health-Institution-Trust-Formal@v1.0.8/HKHealthTrustSTIAT.js'
+        'https://cdn.jsdelivr.net/gh/Jacky-Liangjq/zh-TW-ST-IAT-HK-Health-Institution-Trust-Formal@v1.0.9/HKHealthTrustSTIAT.js'
       );
 
       minnoJS.logger = function (value) {
         var el = container.querySelector('textarea');
         if (el) el.value = value;
+        storeScoreFields(value);
       };
 
       minnoJS.onEnd = function () {
