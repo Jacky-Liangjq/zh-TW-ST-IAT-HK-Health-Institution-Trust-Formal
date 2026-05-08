@@ -352,7 +352,9 @@
       orText: '或',
       orCss: {'font-size': '1.4em', color: '#000000'},
       remindErrorText: '<p style="text-align:center;font-size:1.5em">如果按錯，畫面會顯示紅色 <b style="color:red">X</b>。<br/>請即時改按正確反應以繼續。</p>',
-      finalText: '任務已完成。<br/><br/>請繼續。'
+      finalText: null,
+      finalTextDesktop: '任務已完成。<br/><br/>請按空格鍵繼續問卷。',
+      finalTextTouch: '任務已完成。<br/><br/>請點擊屏幕上的綠色色塊繼續問卷。'
     };
 
     if (_) _.extend(piCurrent, _.defaults(options, stiatObj));
@@ -575,12 +577,13 @@
       }
     }
 
+    var finalText = piCurrent.finalText || (isTouch ? piCurrent.finalTextTouch : piCurrent.finalTextDesktop);
     trialSequence.push({
       inherit: 'instructions',
       data: {blockStart: true},
       layout: [],
       stimuli: [
-        {inherit: 'instructions', media: {html: '<div style="font-size:20px;line-height:1.6;text-align:center">' + piCurrent.finalText + '</div>'}},
+        {inherit: 'instructions', media: {html: '<div style="font-size:20px;line-height:1.6;text-align:center">' + finalText + '</div>'}},
         {data: {handle: 'dummy', alias: 'dummy'}, media: {word: ' '}, location: {top: 1}}
       ].concat(isTouch ? [{data: {handle: 'continueTapZone'}, size: {}, location: {left: 0, right: 0, top: 0, bottom: 0}, css: {opacity: 0.05, background: '#00ff00', border: '2px solid #008000', zIndex: 999}, media: {word: ' '}}] : [])
     });
