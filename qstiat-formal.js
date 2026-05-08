@@ -271,7 +271,7 @@
     };
   }
 
-  function createInstructionHTML(round, isTouch) {
+  function createInstructionHTML(round, isTouch, displayBlock) {
     var startText = isTouch ? '準備好後，請點擊屏幕綠色區域開始。' : '準備好後，請按 <b>空格鍵</b> 開始。';
     var responseText = isTouch ? '點按左側' : '按 <b>E</b> 鍵';
     var rightText = isTouch ? '點按右側' : '按 <b>I</b> 鍵';
@@ -286,8 +286,8 @@
       rightLine = '屬於 <b>不可信</b> 或 <b>健康機構</b> 的詞語，請' + rightText + '。';
     }
 
-    return '<div style="font-size:' + (isTouch ? '17px' : '20px') + ';line-height:1.75">' +
-      '<p style="text-align:center"><u>第 ' + round.block + ' 部分（共 4 部分）</u></p>' +
+    return '<div style="font-size:' + (isTouch ? '17px' : '19px') + ';line-height:1.5;text-align:left;max-width:720px;margin:0 auto;">' +
+      '<p style="text-align:center;font-size:1.08em;margin:0 0 1em 0;"><u>第 ' + displayBlock + ' 部分（共 4 部分）</u></p>' +
       '<p><b>請在保持準確的情況下，盡量快速地將詞語歸類。</b></p>' +
       '<p>' + leftLine + '<br/>' + rightLine + '</p>' +
       '<p>如按錯，畫面會顯示紅色 <b style="color:red">X</b>，請改按正確的反應後繼續。</p>' +
@@ -513,7 +513,7 @@
         css: {color: '#000000', 'font-size': '3em', background: '#ffffff', padding: '0.4em 0.8em', 'border-radius': '8px', display: 'inline-block'}
       }],
       instructions: [
-        {css: {'font-size': '1.4em', color: 'black', lineHeight: 1.2}, nolog: true, location: {bottom: 1}}
+        {css: {'font-size': '1em', color: 'black', lineHeight: 1.2, textAlign: 'center'}, nolog: true, location: {top: 14, left: 8, right: 8}}
       ],
       error: [
         {data: {handle: 'error'}, location: {top: 70}, css: {color: 'red', 'font-size': '4em'}, media: {word: 'X'}, nolog: true}
@@ -551,9 +551,9 @@
       };
     }
 
-    function instructionTrial(round) {
+    function instructionTrial(round, displayBlock) {
       var stimuli = [
-        {inherit: 'instructions', media: {html: createInstructionHTML(round, isTouch)}},
+        {inherit: 'instructions', media: {html: createInstructionHTML(round, isTouch, displayBlock)}},
         {data: {handle: 'dummy', alias: 'dummy'}, media: {word: ' '}, location: {top: 1}}
       ];
       if (isTouch) {
@@ -564,7 +564,7 @@
 
     var trialSequence = [];
     for (var iRound = 0; iRound < trialPlan.length; iRound++) {
-      trialSequence.push(instructionTrial(trialPlan[iRound]));
+      trialSequence.push(instructionTrial(trialPlan[iRound], iRound + 1));
       for (var iSub = 0; iSub < trialPlan[iRound].subBlocks.length; iSub++) {
         var subBlockTrials = trialPlan[iRound].subBlocks[iSub].map(trialToMinnoTrial);
         for (var iTrial = 0; iTrial < subBlockTrials.length; iTrial++) {
