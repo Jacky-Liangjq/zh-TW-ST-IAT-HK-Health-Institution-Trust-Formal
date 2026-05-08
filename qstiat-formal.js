@@ -258,6 +258,19 @@
     });
   }
 
+  function orderTrialPlan(trialPlan, random) {
+    if (random() < 0.5) {
+      return {
+        blockOrder: 'positive_first',
+        trialPlan: trialPlan
+      };
+    }
+    return {
+      blockOrder: 'negative_first',
+      trialPlan: [trialPlan[2], trialPlan[3], trialPlan[0], trialPlan[1]]
+    };
+  }
+
   function createInstructionHTML(round, isTouch) {
     var startText = isTouch ? '準備好後，請點擊屏幕綠色區域開始。' : '準備好後，請按 <b>空格鍵</b> 開始。';
     var responseText = isTouch ? '點按左側' : '按 <b>E</b> 鍵';
@@ -288,6 +301,7 @@
       ROUND_SPECS: ROUND_SPECS,
       STIMULUS_TYPE: STIMULUS_TYPE,
       createFormalTrialPlan: createFormalTrialPlan,
+      orderTrialPlan: orderTrialPlan,
       hasRunOfFourOrMore: hasRunOfFourOrMore,
       hasAdjacentDuplicateWords: hasAdjacentDuplicateWords,
       sideForCategory: sideForCategory
@@ -347,8 +361,9 @@
     var isTouch = !!piCurrent.isTouch;
     var leftCue = isTouch ? piCurrent.leftKeyTextTouch : piCurrent.leftKeyText;
     var rightCue = isTouch ? piCurrent.rightKeyTextTouch : piCurrent.rightKeyText;
-    var trialPlan = createFormalTrialPlan({stimuli: piCurrent.formalStimuli || FORMAL_STIMULI});
-    var block2Condition = 'positive_first';
+    var planOrder = orderTrialPlan(createFormalTrialPlan({stimuli: piCurrent.formalStimuli || FORMAL_STIMULI}), Math.random);
+    var trialPlan = planOrder.trialPlan;
+    var block2Condition = planOrder.blockOrder;
 
     if (isTouch) {
       piCurrent.canvas = shallowMerge(piCurrent.canvas, {maxWidth: 420, proportions: 1.25});
@@ -366,6 +381,7 @@
       serialize: function (name, logs) {
         var headers = ['block', 'trial', 'round', 'cond', 'type', 'cat', 'stim', 'resp', 'err', 'rt', 'd', 'bOrd'];
         var rows = [];
+        rows.push([0, 0, 'block_order', block2Condition, '', '', '', '', '', '', '', block2Condition]);
 
         for (var i = 0; i < logs.length; i++) {
           var log = logs[i];
@@ -604,6 +620,7 @@
   stiatExtension.createFormalTrialPlan = createFormalTrialPlan;
   stiatExtension.FORMAL_STIMULI = FORMAL_STIMULI;
   stiatExtension.ROUND_SPECS = ROUND_SPECS;
+  stiatExtension.orderTrialPlan = orderTrialPlan;
   stiatExtension.hasRunOfFourOrMore = hasRunOfFourOrMore;
   stiatExtension.hasAdjacentDuplicateWords = hasAdjacentDuplicateWords;
   return stiatExtension;

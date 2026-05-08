@@ -131,8 +131,29 @@ function validatePlan(plan) {
   assert.strictEqual(plan[2].includeInD, false, 'Round 3 excluded from D-score');
 }
 
+function validateOrderPlan() {
+  const basePlan = formal.createFormalTrialPlan({random: mulberry32(20260508)});
+
+  const positiveFirst = formal.orderTrialPlan(basePlan, () => 0.25);
+  assert.strictEqual(positiveFirst.blockOrder, 'positive_first', 'positive-first block-order label');
+  assert.deepStrictEqual(
+    positiveFirst.trialPlan.map((round) => round.block),
+    [1, 2, 3, 4],
+    'positive-first display order'
+  );
+
+  const negativeFirst = formal.orderTrialPlan(basePlan, () => 0.75);
+  assert.strictEqual(negativeFirst.blockOrder, 'negative_first', 'negative-first block-order label');
+  assert.deepStrictEqual(
+    negativeFirst.trialPlan.map((round) => round.block),
+    [3, 4, 1, 2],
+    'negative-first display order'
+  );
+}
+
 for (let seed = 1; seed <= 500; seed++) {
   validatePlan(formal.createFormalTrialPlan({random: mulberry32(seed)}));
 }
+validateOrderPlan();
 
 console.log('Formal ST-IAT design validation passed for 500 seeded random plans.');
